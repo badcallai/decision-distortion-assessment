@@ -27,3 +27,9 @@ A running record of what was decided and built, newest at the bottom.
   treated like every other healthy behavior. **A1 is now reverse-scored** (Strongly
   Agree = no distortion), so all 20 questions score uniformly. Updated
   `questions.ts`, `scoring.ts`, and `CLAUDE.md` to match.
+
+## 2026-07-01 — Deployed to Vercel
+- Imported the repo into Vercel and deployed. Live and public at
+  https://decision-distortion-assessment.vercel.app/ (confirmed reachable from a
+  logged-out browser). Production branch is `claude/brave-volta-rehga0`; every push
+  auto-deploys. No environment variables set yet (Supabase comes in Phase 3).
