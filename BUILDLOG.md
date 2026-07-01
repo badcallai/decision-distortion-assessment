@@ -33,3 +33,17 @@ A running record of what was decided and built, newest at the bottom.
   https://decision-distortion-assessment.vercel.app/ (confirmed reachable from a
   logged-out browser). Production branch is `claude/brave-volta-rehga0`; every push
   auto-deploys. No environment variables set yet (Supabase comes in Phase 3).
+
+## 2026-07-01 — Phase 3: Email gate + Supabase capture
+- Added the `@supabase/supabase-js` dependency (approved: part of the stack).
+- Owner decisions: **new Supabase project** for this app (isolated from the writing
+  tracker), and **gate everything** (email required before any scores show).
+- Added `supabase/schema.sql` (`leads` table) and `supabase/policies.sql`
+  (INSERT-only RLS — public cannot read leads back).
+- Added `src/lib/supabase.ts` (lazy server-only client) and `src/app/actions.ts`
+  (`saveLead` Server Action — validates email, recomputes scores server-side,
+  inserts the row).
+- Reworked `src/app/page.tsx` into three screens: questionnaire → email gate →
+  profile. Answers stay in state; the email gate calls `saveLead`.
+- Added `.env.example`. Env vars `SUPABASE_URL` / `SUPABASE_ANON_KEY` still need to
+  be set in `.env.local` and in Vercel before capture works end to end.

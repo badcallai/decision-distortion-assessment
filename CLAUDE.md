@@ -43,6 +43,16 @@ distortion. The canonical logic lives in `src/lib/scoring.ts`.
 **Dominant force:** the highest-scoring force. On a tie, the earlier force in the
 canonical order wins (proper tie-handling is deferred).
 
+**Database (Supabase, Postgres).** One table for now. Columns are snake_case.
+`leads` — `id` (uuid pk), `email` (text), `noise_score` / `bias_score` /
+`accumulation_score` / `incentive_score` (integer 0–100), `dominant_force`
+(text), `answers` (jsonb, the raw 1–5 responses), `created_at` (timestamptz).
+Schema lives in `supabase/schema.sql`; RLS in `supabase/policies.sql` (INSERT
+only — the public anon key cannot read leads back; read them in the dashboard).
+
+**Env vars (server-only, no `NEXT_PUBLIC_` prefix):** `SUPABASE_URL`,
+`SUPABASE_ANON_KEY`. Set in `.env.local` locally and in Vercel's settings.
+
 ## Tech stack — use these, don't substitute
 - **Next.js** (App Router) + **TypeScript**
 - **Tailwind CSS** — all styling, no other CSS framework
@@ -66,7 +76,7 @@ canonical order wins (proper tie-handling is deferred).
 - **Phase 1+2 — Questionnaire + profile.** Render 20 questions, collect answers,
   compute the four-force scores, show the profile on screen. (this build)
 - **Phase 3 — Email gate + capture.** Gate the full report; write lead + scores to
-  Supabase.
+  Supabase. (done)
 - **Phase 4 — Routing + CTA.** Dominant force routes to the matching whitepaper +
   consultation CTA.
 - **Phase 5 — Copy + placement.** Voice pass; place/link on lfbholdings.com.

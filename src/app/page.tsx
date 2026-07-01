@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FORCES, QUESTIONS } from "@/lib/questions";
 import { scoreAssessment, type Answers, type Band } from "@/lib/scoring";
+import { saveLead } from "./actions";
 
 // The 1-5 Likert scale, shown under each question.
 const SCALE = [
@@ -20,9 +21,15 @@ const BAND_STYLES: Record<Band, string> = {
   High: "bg-red-100 text-red-800",
 };
 
+// The three screens the page moves through in order.
+type Phase = "questions" | "email" | "results";
+
 export default function Home() {
   const [answers, setAnswers] = useState<Answers>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [phase, setPhase] = useState<Phase>("questions");
+  const [email, setEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === QUESTIONS.length;
@@ -33,11 +40,30 @@ export default function Home() {
 
   function startOver() {
     setAnswers({});
-    setSubmitted(false);
+    setEmail("");
+    setError("");
+    setPhase("questions");
     window.scrollTo({ top: 0 });
   }
 
-  if (submitted) {
+  async function submitEmail(event: React.FormEvent) {
+    event.preventDefault();
+    setSaving(true);
+    setError("");
+
+    const result = await saveLead(email, answers);
+
+    setSaving(false);
+    if (result.ok) {
+      setPhase("results");
+      window.scrollTo({ top: 0 });
+    } else {
+      setError(result.error ?? "Something went wrong. Please try again.");
+    }
+  }
+
+  // Screen 3 — the full profile, shown after the email is captured.
+  if (phase === "results") {
     const profile = scoreAssessment(answers);
 
     return (
@@ -95,6 +121,49 @@ export default function Home() {
     );
   }
 
+  // Screen 2 — the email gate, shown once all questions are answered.
+  if (phase === "email") {
+    return (
+      <main className="mx-auto max-w-md p-6 sm:p-8">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Your results are ready
+        </h1>
+        <p className="mt-2 text-zinc-600">
+          Enter your email to see which of the four Decision Distortion forces
+          are most active in your organization.
+        </p>
+
+        <form onSubmit={submitEmail} className="mt-6 space-y-3">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@company.com"
+            className="w-full rounded-lg border border-zinc-300 px-3 py-2"
+          />
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full rounded-lg bg-zinc-800 px-5 py-2 text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {saving ? "Saving…" : "Show my profile"}
+          </button>
+        </form>
+
+        <button
+          type="button"
+          onClick={() => setPhase("questions")}
+          className="mt-4 text-sm text-zinc-500 hover:underline"
+        >
+          ← Back to the questions
+        </button>
+      </main>
+    );
+  }
+
+  // Screen 1 — the questionnaire.
   return (
     <main className="mx-auto max-w-2xl p-6 sm:p-8">
       <h1 className="text-2xl font-semibold tracking-tight">
@@ -108,7 +177,7 @@ export default function Home() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          setSubmitted(true);
+          setPhase("email");
           window.scrollTo({ top: 0 });
         }}
         className="mt-8 space-y-10"
