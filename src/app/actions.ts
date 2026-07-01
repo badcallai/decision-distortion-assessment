@@ -33,9 +33,11 @@ export async function saveLead(
   });
 
   if (error) {
+    // Temporary: surface the real database error while we debug the connection.
+    console.error("saveLead insert failed:", error);
     return {
       ok: false,
-      error: "Something went wrong saving your results. Please try again.",
+      error: `Save failed: ${error.message}`,
     };
   }
 
