@@ -1,13 +1,178 @@
+"use client";
+
+import { useState } from "react";
+import { FORCES, QUESTIONS } from "@/lib/questions";
+import { scoreAssessment, type Answers, type Band } from "@/lib/scoring";
+
+// The 1-5 Likert scale, shown under each question.
+const SCALE = [
+  { value: 1, label: "Strongly disagree" },
+  { value: 2, label: "Disagree" },
+  { value: 3, label: "Neutral" },
+  { value: 4, label: "Agree" },
+  { value: 5, label: "Strongly agree" },
+];
+
+// Color styling for each band, used on the results screen.
+const BAND_STYLES: Record<Band, string> = {
+  Low: "bg-green-100 text-green-800",
+  Moderate: "bg-amber-100 text-amber-800",
+  High: "bg-red-100 text-red-800",
+};
+
 export default function Home() {
+  const [answers, setAnswers] = useState<Answers>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const answeredCount = Object.keys(answers).length;
+  const allAnswered = answeredCount === QUESTIONS.length;
+
+  function chooseAnswer(questionId: string, value: number) {
+    setAnswers((previous) => ({ ...previous, [questionId]: value }));
+  }
+
+  function startOver() {
+    setAnswers({});
+    setSubmitted(false);
+    window.scrollTo({ top: 0 });
+  }
+
+  if (submitted) {
+    const profile = scoreAssessment(answers);
+
+    return (
+      <main className="mx-auto max-w-2xl p-6 sm:p-8">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Your Decision Distortion profile
+        </h1>
+        <p className="mt-2 text-zinc-600">
+          Higher scores mean the force is more active in your organization.
+        </p>
+
+        <p className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+          Your dominant force is{" "}
+          <span className="font-semibold">{profile.dominant.name}</span> — the
+          area where distortion appears most active.
+        </p>
+
+        <ul className="mt-6 space-y-3">
+          {profile.results.map((result) => (
+            <li
+              key={result.force}
+              className="rounded-lg border border-zinc-200 p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-medium">{result.name}</span>
+                <span className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${BAND_STYLES[result.band]}`}
+                  >
+                    {result.band}
+                  </span>
+                  <span className="tabular-nums text-zinc-600">
+                    {result.score}/100
+                  </span>
+                </span>
+              </div>
+              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+                <div
+                  className="h-full rounded-full bg-zinc-700"
+                  style={{ width: `${result.score}%` }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          type="button"
+          onClick={startOver}
+          className="mt-8 rounded-lg border border-zinc-300 px-4 py-2 hover:bg-zinc-100"
+        >
+          Start over
+        </button>
+      </main>
+    );
+  }
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-4 p-8">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        Decision Distortion Assessment
+    <main className="mx-auto max-w-2xl p-6 sm:p-8">
+      <h1 className="text-2xl font-semibold tracking-tight">
+        Decision Distortion Self-Assessment
       </h1>
-      <p className="text-lg text-zinc-600 dark:text-zinc-400">
-        A tool to surface the distortions that creep into everyday decisions.
-        The project is just getting started — the assessment itself comes next.
+      <p className="mt-2 text-zinc-600">
+        Rate how strongly each statement describes your organization. Answer all
+        20 to see where the four distortion forces are most active.
       </p>
+
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSubmitted(true);
+          window.scrollTo({ top: 0 });
+        }}
+        className="mt-8 space-y-10"
+      >
+        {FORCES.map((force) => (
+          <section key={force.id}>
+            <h2 className="text-lg font-semibold">{force.name}</h2>
+            <p className="mt-1 text-sm text-zinc-500">{force.description}</p>
+
+            <ol className="mt-4 space-y-6">
+              {QUESTIONS.filter((question) => question.force === force.id).map(
+                (question) => (
+                  <li
+                    key={question.id}
+                    className="rounded-lg border border-zinc-200 p-4"
+                  >
+                    <p className="font-medium">{question.text}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {SCALE.map((option) => {
+                        const selected = answers[question.id] === option.value;
+                        return (
+                          <label
+                            key={option.value}
+                            className={`cursor-pointer rounded-lg border px-3 py-2 text-sm ${
+                              selected
+                                ? "border-zinc-800 bg-zinc-800 text-white"
+                                : "border-zinc-300 hover:bg-zinc-100"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={question.id}
+                              value={option.value}
+                              checked={selected}
+                              onChange={() =>
+                                chooseAnswer(question.id, option.value)
+                              }
+                              className="sr-only"
+                            />
+                            {option.value} · {option.label}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </li>
+                ),
+              )}
+            </ol>
+          </section>
+        ))}
+
+        <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-zinc-200 bg-white py-4">
+          <span className="text-sm text-zinc-500">
+            {answeredCount} / {QUESTIONS.length} answered
+          </span>
+          <button
+            type="submit"
+            disabled={!allAnswered}
+            className="rounded-lg bg-zinc-800 px-5 py-2 text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            See my profile
+          </button>
+        </div>
+      </form>
     </main>
   );
 }
