@@ -32,11 +32,11 @@ force, the exact wording, and a `reverseScored` flag.
 
 **Scale:** 1–5 Likert (1 = Strongly Disagree … 5 = Strongly Agree).
 
-**Scoring:** all questions are reverse-scored EXCEPT `A1`. Reverse-scoring flips
-the response (`6 - response`) so that, for those questions, Disagree = distortion
-present. `A1` uses the raw response (Agree = distortion present). A force's score
-is the average of its five adjusted item scores, normalized to a 0–100 scale
-where high = more distortion. The canonical logic lives in `src/lib/scoring.ts`.
+**Scoring:** every question is worded as a healthy behavior and is reverse-scored.
+Reverse-scoring flips the response (`6 - response`) so that Disagree = distortion
+present (Strongly Agree = no distortion). A force's score is the average of its
+five adjusted item scores, normalized to a 0–100 scale where high = more
+distortion. The canonical logic lives in `src/lib/scoring.ts`.
 
 **Bands (per force, 0–100):** Low 0–33 · Moderate 34–66 · High 67–100.
 

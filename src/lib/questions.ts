@@ -42,8 +42,9 @@ export type Question = {
   id: string;
   force: Force;
   text: string;
-  // Almost every question is reverse-scored (Disagree = distortion present).
-  // A1 is the one exception: it scores in the standard direction.
+  // Every question is worded as a healthy behavior and reverse-scored, so
+  // Disagree = distortion present. Kept as a flag in case an item ever needs
+  // standard scoring.
   reverseScored: boolean;
 };
 
@@ -117,10 +118,7 @@ export const QUESTIONS: Question[] = [
     id: "A1",
     force: "accumulation",
     text: "When something isn't working, we seriously consider eliminating it — not just fixing it or adding resources to it.",
-    // The one standard-scored question: Agree = distortion present. This runs
-    // opposite to the item's healthy wording and is a deliberate, owner-confirmed
-    // exception (2026-07-01) — do not "fix" it to reverse-scored.
-    reverseScored: false,
+    reverseScored: true,
   },
   {
     id: "A2",

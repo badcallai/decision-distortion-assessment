@@ -21,7 +21,8 @@ export type Profile = {
 };
 
 // Reverse-scored questions flip the response so that Disagree = distortion.
-// A1 (reverseScored: false) uses the raw response.
+// All 20 questions are currently reverse-scored; the raw-response branch stays
+// for any future standard-scored item.
 function adjustedScore(question: Question, response: number): number {
   return question.reverseScored ? 6 - response : response;
 }

@@ -23,6 +23,7 @@ A running record of what was decided and built, newest at the bottom.
   selector each, collects answers in state, and shows the four-force profile
   (scores, bands, dominant force) on submit. No database or email gate yet.
 - Flagged that A1's "Agree = distortion" scoring runs opposite to its healthy
-  wording. Owner confirmed this is deliberate: **keep A1 as the exception** as the
-  handoff specifies. Left the code unchanged; noted in `questions.ts` so it is not
-  reverted later.
+  wording. After a quick back-and-forth, owner corrected the handoff: A1 should be
+  treated like every other healthy behavior. **A1 is now reverse-scored** (Strongly
+  Agree = no distortion), so all 20 questions score uniformly. Updated
+  `questions.ts`, `scoring.ts`, and `CLAUDE.md` to match.
