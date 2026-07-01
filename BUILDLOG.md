@@ -22,3 +22,7 @@ A running record of what was decided and built, newest at the bottom.
 - Built `src/app/page.tsx` — renders the 20 questions grouped by force with a 1–5
   selector each, collects answers in state, and shows the four-force profile
   (scores, bands, dominant force) on submit. No database or email gate yet.
+- Flagged that A1's "Agree = distortion" scoring runs opposite to its healthy
+  wording. Owner confirmed this is deliberate: **keep A1 as the exception** as the
+  handoff specifies. Left the code unchanged; noted in `questions.ts` so it is not
+  reverted later.
