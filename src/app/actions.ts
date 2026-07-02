@@ -2,7 +2,7 @@
 
 import { getSupabase } from "@/lib/supabase";
 import { scoreAssessment, type Answers } from "@/lib/scoring";
-import { QUESTIONS } from "@/lib/questions";
+import { QUESTIONS, type Force } from "@/lib/questions";
 import { reportEmailHtml, reportEmailText } from "@/lib/report-email";
 import { Resend } from "resend";
 import { readFileSync } from "fs";
@@ -25,6 +25,15 @@ function dominantQuestion(dominantForce: string, answers: Answers): string {
 function pdfFilename(dominantForce: string, questionId: string): string {
   return `${dominantForce} - ${questionId.toLowerCase()}.pdf`;
 }
+
+// Clean, client-facing name for the attachment. The file we read from disk is
+// unchanged — this only controls what the recipient sees the attachment called.
+const ATTACHMENT_NAME: Record<Force, string> = {
+  noise: "Noise.pdf",
+  bias: "Bias.pdf",
+  accumulation: "Accumulation.pdf",
+  incentive: "Incentives.pdf",
+};
 
 // Saves one lead: their email plus the computed profile and raw answers. The
 // scores are recomputed here on the server from the answers, so the numbers we
@@ -75,12 +84,14 @@ export async function saveLead(
     const { error: emailError } = await resend.emails.send({
       from: "LFB Holdings <results@lfbholdings.com>",
       to: trimmedEmail,
+      // Blind-copy the owner on every report so leads land in the mailbox too.
+      bcc: "rleander@lfbholdings.com",
       subject: `Your Decision Distortion Report — ${profile.dominant.name}`,
       html: reportEmailHtml(profile),
       text: reportEmailText(profile),
       attachments: [
         {
-          filename,
+          filename: ATTACHMENT_NAME[profile.dominant.force],
           content: pdfBuffer,
         },
       ],

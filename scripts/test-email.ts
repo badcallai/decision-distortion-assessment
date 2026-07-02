@@ -42,11 +42,20 @@ const worst = QUESTIONS.filter((q) => q.force === profile.dominant.force).reduce
 const filename = `${profile.dominant.force} - ${worst.id.toLowerCase()}.pdf`;
 const pdfBuffer = readFileSync(join(process.cwd(), "pdfs", filename));
 
+// Clean, client-facing attachment name — mirrors ATTACHMENT_NAME in actions.ts.
+const attachmentName: Record<string, string> = {
+  noise: "Noise.pdf",
+  bias: "Bias.pdf",
+  accumulation: "Accumulation.pdf",
+  incentive: "Incentives.pdf",
+};
+const displayName = attachmentName[profile.dominant.force];
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function main() {
   console.log(`Dominant force: ${profile.dominant.name} (${profile.dominant.score}/100)`);
-  console.log(`Attaching: ${filename} (${pdfBuffer.length} bytes)`);
+  console.log(`Attaching: ${filename} as "${displayName}" (${pdfBuffer.length} bytes)`);
   console.log(`Sending to: ${to} ...`);
 
   const { data, error } = await resend.emails.send({
@@ -55,7 +64,7 @@ async function main() {
     subject: `[TEST] Your Decision Distortion Report — ${profile.dominant.name}`,
     html: reportEmailHtml(profile),
     text: reportEmailText(profile),
-    attachments: [{ filename, content: pdfBuffer }],
+    attachments: [{ filename: displayName, content: pdfBuffer }],
   });
 
   if (error) {
