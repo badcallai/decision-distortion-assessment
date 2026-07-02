@@ -51,12 +51,14 @@ Schema lives in `supabase/schema.sql`; RLS in `supabase/policies.sql` (INSERT
 only — the public anon key cannot read leads back; read them in the dashboard).
 
 **Env vars (server-only, no `NEXT_PUBLIC_` prefix):** `SUPABASE_URL`,
-`SUPABASE_ANON_KEY`. Set in `.env.local` locally and in Vercel's settings.
+`SUPABASE_ANON_KEY`, `RESEND_API_KEY`. Set in `.env.local` locally and in
+Vercel's settings.
 
 ## Tech stack — use these, don't substitute
 - **Next.js** (App Router) + **TypeScript**
 - **Tailwind CSS** — all styling, no other CSS framework
 - **Supabase** — database (later phases); server-only always
+- **Resend** — transactional email (report delivery); server-only always
 - **Vercel** — deployment
 
 ## Standing rules (carried from the handoff)
@@ -78,10 +80,10 @@ only — the public anon key cannot read leads back; read them in the dashboard)
 - **Phase 3 — Email gate + capture.** Gate the full report; write lead + scores to
   Supabase. (done)
 - **Phase 4 — Routing + CTA.** Dominant force routes to the matching whitepaper +
-  consultation CTA.
+  consultation CTA. (in progress) The report PDF is chosen by the respondent's
+  worst-scored question *within* the dominant force (`pdfs/<force> - <id>.pdf`)
+  and emailed via Resend with a consultation link.
 - **Phase 5 — Copy + placement.** Voice pass; place/link on lfbholdings.com.
 
 ## Open decisions (not yet resolved)
-- Which whitepaper editions exist and how each force maps to one (Phase 4).
 - Where on lfbholdings.com the tool lives (Phase 5).
-- Email delivery: capture-only first; actual sending is a later, separate decision.

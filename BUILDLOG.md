@@ -47,3 +47,17 @@ A running record of what was decided and built, newest at the bottom.
   profile. Answers stay in state; the email gate calls `saveLead`.
 - Added `.env.example`. Env vars `SUPABASE_URL` / `SUPABASE_ANON_KEY` still need to
   be set in `.env.local` and in Vercel before capture works end to end.
+
+## 2026-07-02 — Phase 4 (in progress): report routing + email delivery
+- Added the `resend` dependency for transactional email (server-only).
+- Added the 20 whitepaper PDFs under `pdfs/`, named `<force> - <id>.pdf`.
+- Extended `saveLead` (`src/app/actions.ts`): after the lead is stored, it picks
+  the respondent's **worst-scored question within the dominant force**, loads the
+  matching PDF, and emails the personalized report via Resend with a consultation
+  link. The routing is per-question (finer than per-force).
+- The email step is wrapped in try/catch: a missing PDF or a Resend failure is
+  logged but never fails the submission — capture already succeeded, so the user
+  still sees their profile.
+- New env var `RESEND_API_KEY` (server-only) must be set in `.env.local` and in
+  Vercel. Updated `CLAUDE.md` (stack, env vars, phases, resolved the email-delivery
+  open decision).
