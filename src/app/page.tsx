@@ -81,6 +81,11 @@ export default function Home() {
           area where distortion appears most active.
         </p>
 
+        <p className="mt-3 text-zinc-600">
+          Your personalized report is on its way to{" "}
+          <span className="font-medium">{email.trim()}</span>.
+        </p>
+
         <ul className="mt-6 space-y-3">
           {profile.results.map((result) => (
             <li
