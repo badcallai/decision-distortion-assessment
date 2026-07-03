@@ -43,7 +43,7 @@ export type Question = {
   force: Force;
   text: string;
   // Every question is worded as a healthy behavior and reverse-scored, so
-  // Disagree = distortion present. Kept as a flag in case an item ever needs
+  // "Not true of us" = distortion present. Kept as a flag in case an item ever needs
   // standard scoring.
   reverseScored: boolean;
 };

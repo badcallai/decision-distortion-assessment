@@ -20,7 +20,7 @@ export type Profile = {
   dominant: ForceResult;
 };
 
-// Reverse-scored questions flip the response so that Disagree = distortion.
+// Reverse-scored questions flip the response so that "Not true of us" = distortion.
 // All 20 questions are currently reverse-scored; the raw-response branch stays
 // for any future standard-scored item.
 function adjustedScore(question: Question, response: number): number {

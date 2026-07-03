@@ -25,8 +25,8 @@ if (!process.env.RESEND_API_KEY) {
 }
 
 // Sample answers that make "bias" the clear dominant force: bias questions are
-// answered "Strongly disagree" (max distortion once reverse-scored), the rest
-// "Agree" (low distortion). Enough to produce a realistic four-force profile.
+// answered "Not true of us" (max distortion once reverse-scored), the rest
+// "Often true" (low distortion). Enough to produce a realistic four-force profile.
 const answers: Answers = {};
 for (const question of QUESTIONS) {
   answers[question.id] = question.force === "bias" ? 1 : 4;

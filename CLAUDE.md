@@ -30,11 +30,13 @@ Settled with the owner on 2026-07-01. Do not change without asking.
 `src/lib/questions.ts` (`QUESTIONS`). Each question has an id (e.g. `N1`), a
 force, the exact wording, and a `reverseScored` flag.
 
-**Scale:** 1–5 Likert (1 = Strongly Disagree … 5 = Strongly Agree).
+**Scale:** 1–5 frequency (1 = Not true of us … 5 = Consistently true). The five
+anchors, high to low: Consistently true (5), Often true (4), Sometimes true (3),
+Rarely true (2), Not true of us (1).
 
 **Scoring:** every question is worded as a healthy behavior and is reverse-scored.
-Reverse-scoring flips the response (`6 - response`) so that Disagree = distortion
-present (Strongly Agree = no distortion). A force's score is the average of its
+Reverse-scoring flips the response (`6 - response`) so that a low response (Not
+true of us) = distortion present (Consistently true = no distortion). A force's score is the average of its
 five adjusted item scores, normalized to a 0–100 scale where high = more
 distortion. The canonical logic lives in `src/lib/scoring.ts`.
 

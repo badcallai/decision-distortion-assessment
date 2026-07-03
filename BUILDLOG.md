@@ -81,3 +81,12 @@ A running record of what was decided and built, newest at the bottom.
   so it reads as the clear winner. All other bars, including the tied loser, keep
   their true width; score and band values are untouched. Reuses the existing
   `profile.dominant` from `scoring.ts` — no scoring change.
+
+## 2026-07-03 — Copy: frequency scale anchors
+- Replaced the generic Likert anchors (Strongly disagree … Strongly agree) with a
+  frequency scale: Consistently true (5), Often true (4), Sometimes true (3),
+  Rarely true (2), Not true of us (1). "Consistently true" stays at 5, so the
+  healthy-behavior / reverse-scoring direction is unchanged — no scoring math moved.
+- Updated `src/app/page.tsx` (the `SCALE` array), `CLAUDE.md` (locked scale +
+  scoring description), and the stale anchor references in `scoring.ts`,
+  `questions.ts`, and `scripts/test-email.ts`.

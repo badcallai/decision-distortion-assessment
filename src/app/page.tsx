@@ -5,13 +5,15 @@ import { FORCES, QUESTIONS } from "@/lib/questions";
 import { scoreAssessment, type Answers, type Band } from "@/lib/scoring";
 import { saveLead } from "./actions";
 
-// The 1-5 Likert scale, shown under each question.
+// The 1-5 frequency scale, shown under each question. Ordered low to high so
+// value 5 ("Consistently true") means the healthy behavior is fully present
+// (no distortion) and value 1 ("Not true of us") means it's absent (distortion).
 const SCALE = [
-  { value: 1, label: "Strongly disagree" },
-  { value: 2, label: "Disagree" },
-  { value: 3, label: "Neutral" },
-  { value: 4, label: "Agree" },
-  { value: 5, label: "Strongly agree" },
+  { value: 1, label: "Not true of us" },
+  { value: 2, label: "Rarely true" },
+  { value: 3, label: "Sometimes true" },
+  { value: 4, label: "Often true" },
+  { value: 5, label: "Consistently true" },
 ];
 
 // Color styling for each band, used on the results screen.
