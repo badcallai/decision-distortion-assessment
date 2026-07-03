@@ -1,19 +1,23 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* The Decision Distortion palette — an all-navy theme, no white anywhere.
+   These names become Tailwind utilities: bg-navy, bg-card, border-accent, etc. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-navy: #1b2f4e; /* page base */
+  --color-card: #1e3458; /* cards, slightly darker than base */
+  --color-hero: #223662; /* hero band */
+  --color-select: #1a4878; /* selected answer fill */
+  --color-accent: #5ba3e0; /* blue — selections, borders, progress */
+  --color-ink: #e7eefb; /* primary text (light, not pure white) */
+  --color-muted: #93a7c9; /* muted slate-blue for descriptions */
+  --color-line: #2c4368; /* borders — a lighter navy, never white */
+
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-navy);
+  color: var(--color-ink);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

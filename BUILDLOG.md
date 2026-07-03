@@ -90,3 +90,20 @@ A running record of what was decided and built, newest at the bottom.
 - Updated `src/app/page.tsx` (the `SCALE` array), `CLAUDE.md` (locked scale +
   scoring description), and the stale anchor references in `scoring.ts`,
   `questions.ts`, and `scripts/test-email.ts`.
+
+## 2026-07-03 — Look & feel: all-navy overhaul
+- Reskinned the entire app (all three screens) from the light zinc theme to an
+  all-navy palette with a blue accent. No white backgrounds anywhere.
+- Palette as Tailwind tokens in `globals.css`: navy #1b2f4e (base), card #1e3458,
+  hero #223662, select #1a4878, accent #5ba3e0, plus ink/muted/line text+border
+  tokens. Body background set to navy globally.
+- `layout.tsx`: added Playfair Display (next/font) for the "LFB Holdings" wordmark.
+- `page.tsx`: shared header (wordmark + "Strategic Advisory" small-caps tagline) on
+  every screen; hero band with the new hero line + sub-copy; section headers are
+  the force name only with an italic muted description; answer buttons show the
+  five frequency labels with no numbers on one row (grid-cols-5), selected = navy
+  fill + blue border + light text; thin blue progress bar in the footer. Email gate
+  and results screen re-themed to match (navy input, blue-accent bars/callout).
+  Green/amber/red band chips kept for at-a-glance severity; tie-nudge unchanged.
+- The transactional report email was left light (dark HTML emails render poorly
+  across clients). Scoring and the email builder untouched.

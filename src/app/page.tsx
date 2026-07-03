@@ -5,9 +5,9 @@ import { FORCES, QUESTIONS } from "@/lib/questions";
 import { scoreAssessment, type Answers, type Band } from "@/lib/scoring";
 import { saveLead } from "./actions";
 
-// The 1-5 frequency scale, shown under each question. Ordered low to high so
-// value 5 ("Consistently true") means the healthy behavior is fully present
-// (no distortion) and value 1 ("Not true of us") means it's absent (distortion).
+// The 1-5 frequency scale, shown as buttons under each question. Ordered low to
+// high so value 5 ("Consistently true") means the healthy behavior is fully
+// present (no distortion) and value 1 ("Not true of us") means it's absent.
 const SCALE = [
   { value: 1, label: "Not true of us" },
   { value: 2, label: "Rarely true" },
@@ -16,7 +16,8 @@ const SCALE = [
   { value: 5, label: "Consistently true" },
 ];
 
-// Color styling for each band, used on the results screen.
+// Color styling for each band, used on the results screen. Semantic green/amber/
+// red chips — small enough to read cleanly on the navy cards.
 const BAND_STYLES: Record<Band, string> = {
   Low: "bg-green-100 text-green-800",
   Moderate: "bg-amber-100 text-amber-800",
@@ -25,6 +26,20 @@ const BAND_STYLES: Record<Band, string> = {
 
 // The three screens the page moves through in order.
 type Phase = "questions" | "email" | "results";
+
+// The LFB Holdings wordmark + tagline, shown at the top of every screen.
+function Header() {
+  return (
+    <header className="mb-8">
+      <div className="font-serif text-2xl tracking-wide text-ink">
+        LFB Holdings
+      </div>
+      <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted">
+        Strategic Advisory · lfbholdings.com
+      </div>
+    </header>
+  );
+}
 
 export default function Home() {
   const [answers, setAnswers] = useState<Answers>({});
@@ -77,22 +92,23 @@ export default function Home() {
 
     return (
       <main className="mx-auto max-w-2xl p-6 sm:p-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <Header />
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">
           Your Decision Distortion profile
         </h1>
-        <p className="mt-2 text-zinc-600">
-          Higher scores mean the force is more active in your organization.
+        <p className="mt-2 text-muted">
+          A longer bar means the force is more active in your organization.
         </p>
 
-        <p className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+        <p className="mt-6 rounded-lg border-l-4 border-accent bg-card p-4 text-ink">
           Your dominant force is{" "}
           <span className="font-semibold">{profile.dominant.name}</span> — the
           area where distortion appears most active.
         </p>
 
-        <p className="mt-3 text-zinc-600">
+        <p className="mt-3 text-muted">
           Your personalized report is on its way to{" "}
-          <span className="font-medium">{email.trim()}</span>.
+          <span className="font-medium text-ink">{email.trim()}</span>.
         </p>
 
         <ul className="mt-6 space-y-3">
@@ -106,19 +122,19 @@ export default function Home() {
             return (
               <li
                 key={result.force}
-                className="rounded-lg border border-zinc-200 p-4"
+                className="rounded-lg border border-line bg-card p-4"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-medium">{result.name}</span>
+                  <span className="font-medium text-ink">{result.name}</span>
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${BAND_STYLES[result.band]}`}
                   >
                     {result.band}
                   </span>
                 </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-navy">
                   <div
-                    className="h-full rounded-full bg-zinc-700"
+                    className="h-full rounded-full bg-accent"
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>
@@ -130,7 +146,7 @@ export default function Home() {
         <button
           type="button"
           onClick={startOver}
-          className="mt-8 rounded-lg border border-zinc-300 px-4 py-2 hover:bg-zinc-100"
+          className="mt-8 rounded-lg border border-accent px-4 py-2 text-accent hover:bg-select"
         >
           Start over
         </button>
@@ -142,10 +158,11 @@ export default function Home() {
   if (phase === "email") {
     return (
       <main className="mx-auto max-w-md p-6 sm:p-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <Header />
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">
           Your results are ready
         </h1>
-        <p className="mt-2 text-zinc-600">
+        <p className="mt-2 text-muted">
           Enter your email to see which of the four Decision Distortion forces
           are most active in your organization.
         </p>
@@ -157,13 +174,13 @@ export default function Home() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="w-full rounded-lg border border-accent bg-card px-3 py-2 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
           />
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-400">{error}</p>}
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-lg bg-zinc-800 px-5 py-2 text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-full rounded-lg bg-accent px-5 py-2 font-medium text-navy hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {saving ? "Saving…" : "Show my profile"}
           </button>
@@ -172,7 +189,7 @@ export default function Home() {
         <button
           type="button"
           onClick={() => setPhase("questions")}
-          className="mt-4 text-sm text-zinc-500 hover:underline"
+          className="mt-4 text-sm text-muted hover:text-accent"
         >
           ← Back to the questions
         </button>
@@ -183,13 +200,19 @@ export default function Home() {
   // Screen 1 — the questionnaire.
   return (
     <main className="mx-auto max-w-2xl p-6 sm:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        Decision Distortion Self-Assessment
-      </h1>
-      <p className="mt-2 text-zinc-600">
-        Rate how strongly each statement describes your organization. Answer all
-        20 to see where the four distortion forces are most active.
-      </p>
+      <Header />
+
+      <div className="rounded-xl bg-hero p-6 sm:p-8">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          Decision distortion is amplifying every risk you&apos;re already
+          managing.
+        </h1>
+        <p className="mt-3 text-muted">
+          Rate how strongly each statement describes your organization. Answer
+          all 20 questions to see where noise, bias, accumulation, and incentive
+          misalignment are most active — and receive a tailored report.
+        </p>
+      </div>
 
       <form
         onSubmit={(event) => {
@@ -201,27 +224,29 @@ export default function Home() {
       >
         {FORCES.map((force) => (
           <section key={force.id}>
-            <h2 className="text-lg font-semibold">{force.name}</h2>
-            <p className="mt-1 text-sm text-zinc-500">{force.description}</p>
+            <h2 className="text-lg font-semibold text-ink">{force.name}</h2>
+            <p className="mt-1 text-sm italic text-muted">
+              {force.description}
+            </p>
 
-            <ol className="mt-4 space-y-6">
+            <ol className="mt-4 space-y-4">
               {QUESTIONS.filter((question) => question.force === force.id).map(
                 (question) => (
                   <li
                     key={question.id}
-                    className="rounded-lg border border-zinc-200 p-4"
+                    className="rounded-lg border border-line bg-card p-4"
                   >
-                    <p className="font-medium">{question.text}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <p className="font-medium text-ink">{question.text}</p>
+                    <div className="mt-3 grid grid-cols-5 gap-2">
                       {SCALE.map((option) => {
                         const selected = answers[question.id] === option.value;
                         return (
                           <label
                             key={option.value}
-                            className={`cursor-pointer rounded-lg border px-3 py-2 text-sm ${
+                            className={`cursor-pointer rounded-lg border px-2 py-2 text-center text-xs leading-tight sm:text-sm ${
                               selected
-                                ? "border-zinc-800 bg-zinc-800 text-white"
-                                : "border-zinc-300 hover:bg-zinc-100"
+                                ? "border-accent bg-select text-ink"
+                                : "border-line text-muted hover:border-accent"
                             }`}
                           >
                             <input
@@ -234,7 +259,7 @@ export default function Home() {
                               }
                               className="sr-only"
                             />
-                            {option.value} · {option.label}
+                            {option.label}
                           </label>
                         );
                       })}
@@ -246,17 +271,27 @@ export default function Home() {
           </section>
         ))}
 
-        <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-zinc-200 bg-white py-4">
-          <span className="text-sm text-zinc-500">
-            {answeredCount} / {QUESTIONS.length} answered
-          </span>
-          <button
-            type="submit"
-            disabled={!allAnswered}
-            className="rounded-lg bg-zinc-800 px-5 py-2 text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            See my profile
-          </button>
+        <div className="sticky bottom-0 border-t border-line bg-navy py-4">
+          <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-card">
+            <div
+              className="h-full rounded-full bg-accent transition-all"
+              style={{
+                width: `${(answeredCount / QUESTIONS.length) * 100}%`,
+              }}
+            />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm text-muted">
+              {answeredCount} / {QUESTIONS.length} answered
+            </span>
+            <button
+              type="submit"
+              disabled={!allAnswered}
+              className="rounded-lg bg-accent px-5 py-2 font-medium text-navy hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              See my profile
+            </button>
+          </div>
         </div>
       </form>
     </main>
