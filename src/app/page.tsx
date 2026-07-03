@@ -66,6 +66,13 @@ export default function Home() {
   if (phase === "results") {
     const profile = scoreAssessment(answers);
 
+    // On a tie for the top score, the dominant force is the one that routes the
+    // PDF (earlier force in canonical order wins). We widen only that force's bar
+    // by 8% so it reads as the clear winner. Visual only — score and band stay real.
+    const topScore = profile.dominant.score;
+    const tiedForTop =
+      profile.results.filter((result) => result.score === topScore).length > 1;
+
     return (
       <main className="mx-auto max-w-2xl p-6 sm:p-8">
         <h1 className="text-2xl font-semibold tracking-tight">
@@ -87,32 +94,35 @@ export default function Home() {
         </p>
 
         <ul className="mt-6 space-y-3">
-          {profile.results.map((result) => (
-            <li
-              key={result.force}
-              className="rounded-lg border border-zinc-200 p-4"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-medium">{result.name}</span>
-                <span className="flex items-center gap-2">
+          {profile.results.map((result) => {
+            const isNudgedWinner =
+              tiedForTop && result.force === profile.dominant.force;
+            const barWidth = isNudgedWinner
+              ? Math.min(result.score + 8, 100)
+              : result.score;
+
+            return (
+              <li
+                key={result.force}
+                className="rounded-lg border border-zinc-200 p-4"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-medium">{result.name}</span>
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${BAND_STYLES[result.band]}`}
                   >
                     {result.band}
                   </span>
-                  <span className="tabular-nums text-zinc-600">
-                    {result.score}/100
-                  </span>
-                </span>
-              </div>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
-                <div
-                  className="h-full rounded-full bg-zinc-700"
-                  style={{ width: `${result.score}%` }}
-                />
-              </div>
-            </li>
-          ))}
+                </div>
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+                  <div
+                    className="h-full rounded-full bg-zinc-700"
+                    style={{ width: `${barWidth}%` }}
+                  />
+                </div>
+              </li>
+            );
+          })}
         </ul>
 
         <button

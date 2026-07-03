@@ -61,3 +61,23 @@ A running record of what was decided and built, newest at the bottom.
 - New env var `RESEND_API_KEY` (server-only) must be set in `.env.local` and in
   Vercel. Updated `CLAUDE.md` (stack, env vars, phases, resolved the email-delivery
   open decision).
+
+## 2026-07-03 — Display: hide numeric scores, nudge tie winner
+- Removed the numeric `X/100` from both display surfaces. The results screen and
+  the report email (HTML table + dominant callout + plain-text lines) now show the
+  band label only; the results screen keeps its visual bar. Scores are still
+  computed and written to Supabase — only hidden from the respondent.
+- Left the email without a bar (owner decision): band label only there.
+- Tie nudge (results screen, visual only): when two or more forces share the top
+  score, the dominant (PDF-routing) force's bar renders at `min(score + 8, 100)
+## 2026-07-03 — Display: hide numeric scores, nudge tie winner
+- Removed the numeric `X/100` from both display surfaces. The results screen and
+  the report email (HTML table + dominant callout + plain-text lines) now show the
+  band label only; the results screen keeps its visual bar. Scores are still
+  computed and written to Supabase — only hidden from the respondent.
+- Left the email without a bar (owner decision): band label only there.
+- Tie nudge (results screen, visual only): when two or more forces share the top
+  score, the dominant (PDF-routing) force's bar renders at `min(score + 8, 100)%`
+  so it reads as the clear winner. All other bars, including the tied loser, keep
+  their true width; score and band values are untouched. Reuses the existing
+  `profile.dominant` from `scoring.ts` — no scoring change.

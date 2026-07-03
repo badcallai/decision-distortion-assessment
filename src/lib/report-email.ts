@@ -13,8 +13,8 @@ const BAND_EMAIL_STYLES: Record<Band, string> = {
 };
 
 // The HTML body of the report email: the dominant force called out at the top,
-// then all four forces with their 0-100 score and band. Table-based with inline
-// styles so it renders consistently across email clients.
+// then all four forces with their band. Table-based with inline styles so it
+// renders consistently across email clients.
 export function reportEmailHtml(profile: Profile): string {
   const rows = profile.results
     .map((result) => {
@@ -23,9 +23,6 @@ export function reportEmailHtml(profile: Profile): string {
         <tr>
           <td style="padding:10px 12px;border-bottom:1px solid #e4e4e7;font-weight:${isDominant ? 700 : 400};">
             ${result.name}${isDominant ? " &middot; dominant" : ""}
-          </td>
-          <td style="padding:10px 12px;border-bottom:1px solid #e4e4e7;text-align:right;color:#52525b;white-space:nowrap;">
-            ${result.score}/100
           </td>
           <td style="padding:10px 12px;border-bottom:1px solid #e4e4e7;text-align:right;">
             <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:600;${BAND_EMAIL_STYLES[result.band]}">
@@ -46,7 +43,7 @@ export function reportEmailHtml(profile: Profile): string {
     <div style="background:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;padding:16px;margin-bottom:20px;font-size:14px;line-height:1.5;">
       Your dominant force is
       <strong>${profile.dominant.name}</strong>
-      (${profile.dominant.score}/100, ${profile.dominant.band}) — the area where
+      (${profile.dominant.band}) — the area where
       distortion appears most active. Your personalized report is attached.
     </div>
 
@@ -66,11 +63,11 @@ export function reportEmailHtml(profile: Profile): string {
 // Plain-text fallback, sent alongside the HTML for clients that don't render it.
 export function reportEmailText(profile: Profile): string {
   const lines = profile.results
-    .map((result) => `- ${result.name}: ${result.score}/100 (${result.band})`)
+    .map((result) => `- ${result.name}: ${result.band}`)
     .join("\n");
   return `Your Decision Distortion profile
 
-Your dominant force is ${profile.dominant.name} (${profile.dominant.score}/100, ${profile.dominant.band}) — the area where distortion appears most active. Your personalized report is attached.
+Your dominant force is ${profile.dominant.name} (${profile.dominant.band}) — the area where distortion appears most active. Your personalized report is attached.
 
 ${lines}
 
