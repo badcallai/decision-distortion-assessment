@@ -189,6 +189,8 @@ export default function Home() {
         <form onSubmit={submitEmail} className="mt-6 space-y-3">
           <input
             type="email"
+            name="email"
+            autoComplete="email"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -197,6 +199,7 @@ export default function Home() {
           />
           <input
             type="text"
+            autoComplete="off"
             value={company}
             onChange={(event) => setCompany(event.target.value)}
             placeholder="Company or engagement name — optional"
