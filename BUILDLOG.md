@@ -174,3 +174,12 @@ A running record of what was decided and built, newest at the bottom.
 - Verified: helper merge (2-page whitepaper → 3 pages; cover text/order confirmed
   by extraction) and two live submissions — with a company (cover path, ~4.5s) and
   without (skipped, ~1.9s), both succeeding with no cover/email errors logged.
+
+## 2026-07-05 — Email gate: autocomplete hints
+- Browsers were offering credit-card/contact autofill on the email field because it
+  carried no autocomplete hint (type="email" alone doesn't steer autofill).
+- Email field: added `name="email"` + `autoComplete="email"` so browsers offer saved
+  addresses only. Company/engagement field: added `autoComplete="off"` to suppress
+  unwanted suggestions without asserting a value type — it stays free-form (org,
+  project name, code, or number all still accepted).
+- Display-only change to page.tsx; input handling, scoring, and storage untouched.
