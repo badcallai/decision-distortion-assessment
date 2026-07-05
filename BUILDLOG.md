@@ -122,3 +122,13 @@ A running record of what was decided and built, newest at the bottom.
 - Hero band is solid navy for now; a photo can be added later at public/hero.jpg (the image
   the owner first supplied was a 200x97 thumbnail, too small to use).
 - Updated the "Design — Locked" section of app-codebase-context.md to the new palette.
+
+## 2026-07-05 — Fix: tie-nudge at the 100% ceiling
+- The tie-nudge only bumped the winner's bar up (`min(score + 8, 100)`), so when
+  forces tied at 100 the winner couldn't pull ahead — all bars showed 100% even
+  though the report named a dominant force (reproduced by maxing out all four).
+- Now the winner keeps an 8-point gap either way: it bumps up when there's headroom,
+  and when it's already at 100 the tied bars are marked down to 92 instead. Non-tied
+  forces keep their true width. Below the ceiling the behavior is unchanged.
+- Display-only (`page.tsx` results screen). Scoring, dominant-force pick, bands, and
+  the email are untouched. Verified with the all-maxed case: Noise 100%, others 92%.

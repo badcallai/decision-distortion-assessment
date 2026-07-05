@@ -83,12 +83,15 @@ export default function Home() {
   if (phase === "results") {
     const profile = scoreAssessment(answers);
 
-    // On a tie for the top score, the dominant force is the one that routes the
-    // PDF (earlier force in canonical order wins). We widen only that force's bar
-    // by 8% so it reads as the clear winner. Visual only — score and band stay real.
+    // On a tie for the top score, keep an 8-point visual gap so the dominant
+    // force (the one that routes the PDF — earlier force in canonical order wins)
+    // reads as a clear winner. If there's headroom the winner's bar bumps up; if
+    // it's already maxed at 100, the tied bars are marked down instead. Visual
+    // only — scores and bands are unchanged.
     const topScore = profile.dominant.score;
     const tiedForTop =
       profile.results.filter((result) => result.score === topScore).length > 1;
+    const winnerWidth = Math.min(topScore + 8, 100);
 
     return (
       <main className="mx-auto max-w-2xl p-6 sm:p-8">
@@ -113,11 +116,12 @@ export default function Home() {
 
         <ul className="mt-6 space-y-3">
           {profile.results.map((result) => {
-            const isNudgedWinner =
-              tiedForTop && result.force === profile.dominant.force;
-            const barWidth = isNudgedWinner
-              ? Math.min(result.score + 8, 100)
-              : result.score;
+            const isWinner = result.force === profile.dominant.force;
+            const isTiedLoser =
+              tiedForTop && !isWinner && result.score === topScore;
+            let barWidth = result.score;
+            if (tiedForTop && isWinner) barWidth = winnerWidth;
+            else if (isTiedLoser) barWidth = winnerWidth - 8;
 
             return (
               <li
