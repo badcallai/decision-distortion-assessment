@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { FORCES, QUESTIONS } from "@/lib/questions";
 import { scoreAssessment, type Answers, type Band } from "@/lib/scoring";
 import { saveLead } from "./actions";
@@ -31,11 +32,16 @@ type Phase = "questions" | "email" | "results";
 function Header() {
   return (
     <header className="mb-8">
-      <div className="font-heading text-2xl font-bold tracking-tight text-heading">
-        LFB Holdings
-      </div>
+      <Image
+        src="/logo.png"
+        alt="LFB Holdings"
+        width={708}
+        height={411}
+        priority
+        className="h-auto w-[150px]"
+      />
       <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted">
-        Strategic Advisory · lfbholdings.com
+        Strategic Advisory
       </div>
     </header>
   );

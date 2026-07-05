@@ -4,6 +4,8 @@
 // so it has no native dependencies and runs cleanly in Vercel's environment.
 
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type Color } from "pdf-lib";
+import fs from "fs";
+import path from "path";
 
 // The standard PDF fonts use WinAnsi encoding, which can't draw smart quotes,
 // em dashes, and similar characters. Swap the common ones to plain ASCII so a
@@ -20,7 +22,6 @@ export async function prependCoverPage(
   companyName: string,
 ): Promise<Buffer> {
   const doc = await PDFDocument.create();
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const regular = await doc.embedFont(StandardFonts.Helvetica);
 
   // US Letter, portrait.
@@ -50,11 +51,24 @@ export async function prependCoverPage(
     page.drawText(safe, { x: (pageWidth - width) / 2, y, size, font, color });
   };
 
-  // Wordmark, document title, who it's for, and the date — nothing else.
-  drawCentered("LFB Holdings", bold, 30, 470, navy);
-  drawCentered("Decision Distortion Assessment", regular, 16, 430, muted);
-  drawCentered(`Prepared for ${companyName}`, regular, 14, 392, navy);
-  drawCentered(generatedOn, regular, 11, 368, muted);
+  // Logo centered near the top, then the document title, who it's for, and the
+  // date. The logo carries the "LFB Holdings" wordmark, so no separate text line.
+  const logoBytes = fs.readFileSync(
+    path.join(process.cwd(), "public", "logo.png"),
+  );
+  const logo = await doc.embedPng(logoBytes);
+  const logoWidth = 200;
+  const logoHeight = (logo.height / logo.width) * logoWidth;
+  page.drawImage(logo, {
+    x: (pageWidth - logoWidth) / 2,
+    y: 500,
+    width: logoWidth,
+    height: logoHeight,
+  });
+
+  drawCentered("Decision Distortion Assessment", regular, 16, 458, muted);
+  drawCentered(`Prepared for ${companyName}`, regular, 14, 420, navy);
+  drawCentered(generatedOn, regular, 11, 396, muted);
 
   // Append the whitepaper's pages after the cover so the cover is page 1.
   const whitepaperDoc = await PDFDocument.load(whitepaper);

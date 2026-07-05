@@ -183,3 +183,20 @@ A running record of what was decided and built, newest at the bottom.
   unwanted suggestions without asserting a value type — it stays free-form (org,
   project name, code, or number all still accepted).
 - Display-only change to page.tsx; input handling, scoring, and storage untouched.
+
+## 2026-07-05 — Branding: LFB Holdings logo on app + PDF cover
+- Added the LFB Holdings logo across all three app screens and the PDF cover. The
+  owner supplied a 4x transparent PNG; cropped it tight to the artwork and saved as
+  `public/logo.png` (708x411, transparent). The earlier text-based SVG was unusable
+  (Google-Font `<text>`, renders as the wrong typeface via `<img>`), and the first
+  PNG had a baked-in cream background — the transparent 4x PNG is the source of truth.
+- `page.tsx` `Header()`: replaced the text "LFB Holdings" wordmark with the logo
+  (`next/image`, 150px wide) on the light page background. Kept the tagline beneath
+  it and trimmed it from "Strategic Advisory · lfbholdings.com" to just
+  "Strategic Advisory" (owner request).
+- `cover-page.ts`: embed the logo (`doc.embedPng`, 200pt wide, centered near the top)
+  in place of the drawn "LFB Holdings" text line; title/"Prepared for"/date sit below.
+  Reads bytes from `public/logo.png` server-side. Dropped the now-unused bold font.
+- Verified: `npm run build` clean; cover smoke test (2-page whitepaper → 3 pages) with
+  the embedded image carrying its alpha (SMask) and the text lines intact; header
+  eyeballed on the dev server. Scoring, routing, capture, and email content untouched.
