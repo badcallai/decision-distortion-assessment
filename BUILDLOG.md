@@ -151,3 +151,11 @@ A running record of what was decided and built, newest at the bottom.
   respondent had no way out of the app. Added a primary "Return to lfbholdings.com"
   link (same-tab navigation to the homepage) alongside Start over.
 - Display-only addition to page.tsx; nothing else touched.
+
+## 2026-07-05 — Email gate + results polish
+- Results screen: "Prepared for {name}" now matches the "A longer bar…" line size
+  (dropped text-sm so both are base 16px).
+- Email gate: reordered so the email field is first and the optional company field
+  second. Replaced the company field's separate label + "Acme Credit Union"
+  placeholder with a single placeholder "Company or engagement name — optional"
+  (kept an aria-label for screen readers), matching the email field's style.
