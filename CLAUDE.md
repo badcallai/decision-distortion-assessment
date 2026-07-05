@@ -85,7 +85,10 @@ Vercel's settings.
 - **Phase 4 — Routing + CTA.** Dominant force routes to the matching whitepaper +
   consultation CTA. (in progress) The report PDF is chosen by the respondent's
   worst-scored question *within* the dominant force (`pdfs/<force> - <id>.pdf`)
-  and emailed via Resend with a consultation link.
+  and emailed via Resend with a consultation link. When the respondent supplies the
+  optional company/engagement name, a one-page cover ("Prepared for …" + date) is
+  generated at runtime with `pdf-lib` (`src/lib/cover-page.ts`) and prepended to the
+  whitepaper in memory; a blank name attaches the PDF unchanged.
 - **Phase 5 — Copy + placement.** Voice pass; place/link on lfbholdings.com.
 
 ## Open decisions (not yet resolved)

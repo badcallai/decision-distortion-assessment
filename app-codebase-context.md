@@ -48,6 +48,7 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 | `src/lib/scoring.ts` | Scoring logic — reverse-scores answers, normalizes to 0–100, assigns bands, picks the dominant force (earlier-force tie-break) |
 | `src/lib/questions.ts` | All 20 questions with force labels (N, B, A, I) and reverse-score flags |
 | `src/lib/report-email.ts` | Builds the report email — `reportEmailHtml` + `reportEmailText`. Separate module, imported by `actions.ts` |
+| `src/lib/cover-page.ts` | Generates a one-page transmittal cover (pdf-lib) and prepends it to the whitepaper when a company name was given |
 | `src/app/actions.ts` | Server Action `saveLead` — scores answers, saves the lead to Supabase, selects the PDF, sends the email via Resend (BCC owner) |
 | `src/lib/supabase.ts` | Supabase client setup (server-only, no credentials sent to browser) |
 | `supabase/schema.sql` | Database schema |
@@ -113,6 +114,11 @@ Light theme matched to lfbholdings.com (replaced the earlier all-navy dark theme
   e.g. `noise - n3.pdf`, `bias - b2.pdf`, `accumulation - a5.pdf`
 - Client-facing attachment name is clean and per-force: `Noise.pdf`, `Bias.pdf`,
   `Accumulation.pdf`, `Incentives.pdf`
+- If a company/engagement name was provided, a one-page cover ("LFB Holdings" /
+  "Decision Distortion Assessment" / "Prepared for {name}" / date) is generated at
+  runtime with **pdf-lib** and prepended as page 1 — in memory, disk PDFs untouched.
+  Blank name → whitepaper attached unchanged. A cover failure falls back to the plain
+  PDF and never blocks the email. Logic in `src/lib/cover-page.ts`, called from `actions.ts`.
 
 ---
 

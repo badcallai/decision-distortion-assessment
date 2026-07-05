@@ -159,3 +159,18 @@ A running record of what was decided and built, newest at the bottom.
   second. Replaced the company field's separate label + "Acme Credit Union"
   placeholder with a single placeholder "Company or engagement name — optional"
   (kept an aria-label for screen readers), matching the email field's style.
+
+## 2026-07-05 — Feature: PDF cover page when a company name is given
+- When the respondent fills the optional company/engagement name, the emailed
+  whitepaper now gets a generated one-page transmittal cover as page 1. Blank name
+  attaches the whitepaper unchanged (no cover).
+- Added `pdf-lib` (approved). New `src/lib/cover-page.ts` builds a spare cover in
+  memory — "LFB Holdings", "Decision Distortion Assessment", "Prepared for {name}",
+  and the generation date, centered — then prepends the whitepaper pages. Disk PDFs
+  are never touched; everything stays in memory.
+- `actions.ts` calls it only when a company name is present, wrapped in try/catch:
+  any cover failure logs and falls back to the plain whitepaper so it never blocks
+  the email. Client-facing attachment filename (Noise.pdf, etc.) is unchanged.
+- Verified: helper merge (2-page whitepaper → 3 pages; cover text/order confirmed
+  by extraction) and two live submissions — with a company (cover path, ~4.5s) and
+  without (skipped, ~1.9s), both succeeding with no cover/email errors logged.

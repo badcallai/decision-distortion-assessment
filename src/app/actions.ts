@@ -4,6 +4,7 @@ import { getSupabase } from "@/lib/supabase";
 import { scoreAssessment, type Answers } from "@/lib/scoring";
 import { QUESTIONS, type Force } from "@/lib/questions";
 import { reportEmailHtml, reportEmailText } from "@/lib/report-email";
+import { prependCoverPage } from "@/lib/cover-page";
 import { Resend } from "resend";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -85,6 +86,19 @@ export async function saveLead(
     const filename = pdfFilename(profile.dominant.force, questionId);
     const pdfBuffer = readFileSync(join(process.cwd(), "pdfs", filename));
 
+    // When a company / engagement name was provided, prepend a cover page naming
+    // them. A blank name skips this entirely and attaches the whitepaper as-is.
+    // If cover generation fails for any reason, fall back to the plain whitepaper
+    // so a cover problem never blocks the email.
+    let attachment: Buffer = pdfBuffer;
+    if (company) {
+      try {
+        attachment = await prependCoverPage(pdfBuffer, company);
+      } catch (coverError) {
+        console.error("Cover page generation failed:", coverError);
+      }
+    }
+
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { error: emailError } = await resend.emails.send({
       from: "LFB Holdings <results@lfbholdings.com>",
@@ -97,7 +111,7 @@ export async function saveLead(
       attachments: [
         {
           filename: ATTACHMENT_NAME[profile.dominant.force],
-          content: pdfBuffer,
+          content: attachment,
         },
       ],
     });
