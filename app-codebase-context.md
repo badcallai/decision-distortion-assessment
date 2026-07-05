@@ -123,6 +123,8 @@ Light theme matched to lfbholdings.com (replaced the earlier all-navy dark theme
   imported by `actions.ts` — not inlined
 - Includes: full score profile (band labels + bars, no numeric scores), dominant force callout,
   PDF attached
+- If the respondent filled the optional company/engagement name, it's stored in
+  `leads.company_name` and echoed as "Prepared for {name}" on the results screen and in the email
 - BCC copy goes to the owner (`rleander@lfbholdings.com`) on every report
 - Sending address: `results@lfbholdings.com` (domain verified in Resend)
 - Email delivery is wrapped in try/catch: a missing PDF or Resend failure is logged but never

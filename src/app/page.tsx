@@ -45,6 +45,7 @@ export default function Home() {
   const [answers, setAnswers] = useState<Answers>({});
   const [phase, setPhase] = useState<Phase>("questions");
   const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -58,6 +59,7 @@ export default function Home() {
   function startOver() {
     setAnswers({});
     setEmail("");
+    setCompany("");
     setError("");
     setPhase("questions");
     window.scrollTo({ top: 0 });
@@ -68,7 +70,7 @@ export default function Home() {
     setSaving(true);
     setError("");
 
-    const result = await saveLead(email, answers);
+    const result = await saveLead(email, answers, company);
 
     setSaving(false);
     if (result.ok) {
@@ -102,6 +104,11 @@ export default function Home() {
         <p className="mt-2 text-muted">
           A longer bar means the force is more active in your organization.
         </p>
+        {company.trim() && (
+          <p className="mt-3 text-sm font-medium text-heading">
+            Prepared for {company.trim()}
+          </p>
+        )}
 
         <p className="mt-6 rounded-lg border border-line border-l-4 border-l-accent bg-card p-4 text-ink">
           Your dominant force is{" "}
@@ -172,6 +179,23 @@ export default function Home() {
         </p>
 
         <form onSubmit={submitEmail} className="mt-6 space-y-3">
+          <div>
+            <label
+              htmlFor="company"
+              className="mb-1 block text-sm text-muted"
+            >
+              Company or engagement name{" "}
+              <span className="text-muted">— optional</span>
+            </label>
+            <input
+              id="company"
+              type="text"
+              value={company}
+              onChange={(event) => setCompany(event.target.value)}
+              placeholder="Acme Credit Union"
+              className="w-full rounded-lg border border-line bg-card px-3 py-2 text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+            />
+          </div>
           <input
             type="email"
             required

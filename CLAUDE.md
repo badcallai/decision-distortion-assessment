@@ -46,7 +46,8 @@ distortion. The canonical logic lives in `src/lib/scoring.ts`.
 canonical order wins (proper tie-handling is deferred).
 
 **Database (Supabase, Postgres).** One table for now. Columns are snake_case.
-`leads` — `id` (uuid pk), `email` (text), `noise_score` / `bias_score` /
+`leads` — `id` (uuid pk), `email` (text), `company_name` (text, nullable — the
+optional company / engagement name), `noise_score` / `bias_score` /
 `accumulation_score` / `incentive_score` (integer 0–100), `dominant_force`
 (text), `answers` (jsonb, the raw 1–5 responses), `created_at` (timestamptz).
 Schema lives in `supabase/schema.sql`; RLS in `supabase/policies.sql` (INSERT

@@ -41,11 +41,15 @@ const ATTACHMENT_NAME: Record<Force, string> = {
 export async function saveLead(
   email: string,
   answers: Answers,
+  companyName?: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const trimmedEmail = email.trim();
   if (!trimmedEmail.includes("@")) {
     return { ok: false, error: "Please enter a valid email address." };
   }
+
+  // The company / engagement name is optional — store null when it's left blank.
+  const company = companyName?.trim() || null;
 
   const profile = scoreAssessment(answers);
   const scoreByForce: Record<string, number> = {};
@@ -56,6 +60,7 @@ export async function saveLead(
   const supabase = getSupabase();
   const { error } = await supabase.from("leads").insert({
     email: trimmedEmail,
+    company_name: company,
     noise_score: scoreByForce.noise,
     bias_score: scoreByForce.bias,
     accumulation_score: scoreByForce.accumulation,
@@ -87,8 +92,8 @@ export async function saveLead(
       // Blind-copy the owner on every report so leads land in the mailbox too.
       bcc: "rleander@lfbholdings.com",
       subject: `Your Decision Distortion Report — ${profile.dominant.name}`,
-      html: reportEmailHtml(profile),
-      text: reportEmailText(profile),
+      html: reportEmailHtml(profile, company),
+      text: reportEmailText(profile, company),
       attachments: [
         {
           filename: ATTACHMENT_NAME[profile.dominant.force],

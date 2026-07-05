@@ -132,3 +132,16 @@ A running record of what was decided and built, newest at the bottom.
   forces keep their true width. Below the ceiling the behavior is unchanged.
 - Display-only (`page.tsx` results screen). Scoring, dominant-force pick, bands, and
   the email are untouched. Verified with the all-maxed case: Noise 100%, others 92%.
+
+## 2026-07-05 — Feature: optional company / engagement name
+- Added an optional "Company or engagement name — optional" text field on the email
+  gate (above the email; not required; blank is stored as null). Useful for the
+  consultant use case (one respondent assessing a named client).
+- New nullable column `leads.company_name`. Ran `alter table public.leads add column
+  if not exists company_name text;` in Supabase before deploying; also added it to
+  `supabase/schema.sql` (create + safe alter).
+- `saveLead` now takes an optional companyName, stores it, and passes it to the email
+  builder. `report-email.ts` echoes "Prepared for {name}" (HTML-escaped) when present;
+  the results screen shows the same line. Both hidden when the field is left blank.
+- Docs updated: CLAUDE.md leads schema + app-codebase-context.md. Scoring, bands,
+  tie-nudge, and PDF routing untouched.

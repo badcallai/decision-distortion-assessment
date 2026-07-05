@@ -11,6 +11,7 @@
 create table if not exists public.leads (
   id uuid primary key default gen_random_uuid(),
   email text not null,
+  company_name text, -- optional company / engagement name the respondent typed
   noise_score integer not null,
   bias_score integer not null,
   accumulation_score integer not null,
@@ -19,3 +20,7 @@ create table if not exists public.leads (
   answers jsonb not null,
   created_at timestamptz not null default now()
 );
+
+-- Adds company_name to a table created before this column existed. Safe to run
+-- repeatedly, and required before deploying the optional company-name field.
+alter table public.leads add column if not exists company_name text;

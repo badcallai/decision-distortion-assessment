@@ -12,10 +12,24 @@ const BAND_EMAIL_STYLES: Record<Band, string> = {
   High: "background:#fee2e2;color:#991b1b;",
 };
 
+// The company name is free text typed by the respondent, so escape it before
+// dropping it into the HTML email.
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 // The HTML body of the report email: the dominant force called out at the top,
 // then all four forces with their band. Table-based with inline styles so it
 // renders consistently across email clients.
-export function reportEmailHtml(profile: Profile): string {
+export function reportEmailHtml(profile: Profile, company?: string | null): string {
+  const preparedFor = company
+    ? `<p style="margin:0 0 20px;color:#18181b;font-size:14px;font-weight:600;">Prepared for ${escapeHtml(company)}</p>`
+    : "";
+
   const rows = profile.results
     .map((result) => {
       const isDominant = result.force === profile.dominant.force;
@@ -39,7 +53,7 @@ export function reportEmailHtml(profile: Profile): string {
     <p style="margin:0 0 20px;color:#52525b;font-size:14px;">
       Higher scores mean the force is more active in your organization.
     </p>
-
+    ${preparedFor}
     <div style="background:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;padding:16px;margin-bottom:20px;font-size:14px;line-height:1.5;">
       Your dominant force is
       <strong>${profile.dominant.name}</strong>
@@ -61,13 +75,14 @@ export function reportEmailHtml(profile: Profile): string {
 }
 
 // Plain-text fallback, sent alongside the HTML for clients that don't render it.
-export function reportEmailText(profile: Profile): string {
+export function reportEmailText(profile: Profile, company?: string | null): string {
   const lines = profile.results
     .map((result) => `- ${result.name}: ${result.band}`)
     .join("\n");
+  const preparedFor = company ? `Prepared for ${company}\n\n` : "";
   return `Your Decision Distortion profile
 
-Your dominant force is ${profile.dominant.name} (${profile.dominant.band}) — the area where distortion appears most active. Your personalized report is attached.
+${preparedFor}Your dominant force is ${profile.dominant.name} (${profile.dominant.band}) — the area where distortion appears most active. Your personalized report is attached.
 
 ${lines}
 
