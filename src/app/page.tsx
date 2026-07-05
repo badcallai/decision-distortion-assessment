@@ -154,13 +154,21 @@ export default function Home() {
           })}
         </ul>
 
-        <button
-          type="button"
-          onClick={startOver}
-          className="mt-8 rounded-lg border border-accent px-4 py-2 text-accent hover:bg-select"
-        >
-          Start over
-        </button>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a
+            href="https://lfbholdings.com"
+            className="rounded-lg bg-accent px-4 py-2 font-medium text-white hover:bg-accent-hover"
+          >
+            Return to lfbholdings.com
+          </a>
+          <button
+            type="button"
+            onClick={startOver}
+            className="rounded-lg border border-accent px-4 py-2 text-accent hover:bg-select"
+          >
+            Start over
+          </button>
+        </div>
       </main>
     );
   }

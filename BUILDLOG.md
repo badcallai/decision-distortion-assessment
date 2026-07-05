@@ -145,3 +145,9 @@ A running record of what was decided and built, newest at the bottom.
   the results screen shows the same line. Both hidden when the field is left blank.
 - Docs updated: CLAUDE.md leads schema + app-codebase-context.md. Scoring, bands,
   tie-nudge, and PDF routing untouched.
+
+## 2026-07-05 — Results screen: exit to lfbholdings.com
+- The results screen previously ended with only "Start over", so a finished
+  respondent had no way out of the app. Added a primary "Return to lfbholdings.com"
+  link (same-tab navigation to the homepage) alongside Start over.
+- Display-only addition to page.tsx; nothing else touched.
