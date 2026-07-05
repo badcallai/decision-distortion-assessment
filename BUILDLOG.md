@@ -107,3 +107,18 @@ A running record of what was decided and built, newest at the bottom.
   Green/amber/red band chips kept for at-a-glance severity; tie-nudge unchanged.
 - The transactional report email was left light (dark HTML emails render poorly
   across clients). Scoring and the email builder untouched.
+
+## 2026-07-05 — Look & feel: light theme matched to lfbholdings.com
+- Reversed the all-navy dark overhaul in favor of a light theme pulled from the live
+  lfbholdings.com site (which is light with a navy + burnt-orange identity). Extracted the
+  site's actual tokens: fonts Archivo (headings) + Roboto (body); page bg #f3f5f7; white
+  cards; navy #1b263b; accent burnt orange #bb6108.
+- `globals.css`: new light palette tokens (page/card/line/hero/ink/heading/muted/accent/
+  accent-hover/select/bar/track); body background now light.
+- `layout.tsx`: swapped Playfair/Geist for Archivo (headings + wordmark) + Roboto (body).
+- `page.tsx`: light canvas, white cards, navy hero band with white text, orange buttons +
+  progress bar, selected answer = orange border + light-orange fill + navy text, navy score
+  bars on a light track. Green/amber/red band chips kept. Scoring + tie-nudge unchanged.
+- Hero band is solid navy for now; a photo can be added later at public/hero.jpg (the image
+  the owner first supplied was a 200x97 thumbnail, too small to use).
+- Updated the "Design — Locked" section of app-codebase-context.md to the new palette.

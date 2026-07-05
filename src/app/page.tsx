@@ -17,7 +17,7 @@ const SCALE = [
 ];
 
 // Color styling for each band, used on the results screen. Semantic green/amber/
-// red chips — small enough to read cleanly on the navy cards.
+// red chips, kept for at-a-glance severity on the light cards.
 const BAND_STYLES: Record<Band, string> = {
   Low: "bg-green-100 text-green-800",
   Moderate: "bg-amber-100 text-amber-800",
@@ -31,7 +31,7 @@ type Phase = "questions" | "email" | "results";
 function Header() {
   return (
     <header className="mb-8">
-      <div className="font-serif text-2xl tracking-wide text-ink">
+      <div className="font-heading text-2xl font-bold tracking-tight text-heading">
         LFB Holdings
       </div>
       <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted">
@@ -93,14 +93,14 @@ export default function Home() {
     return (
       <main className="mx-auto max-w-2xl p-6 sm:p-8">
         <Header />
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-heading">
           Your Decision Distortion profile
         </h1>
         <p className="mt-2 text-muted">
           A longer bar means the force is more active in your organization.
         </p>
 
-        <p className="mt-6 rounded-lg border-l-4 border-accent bg-card p-4 text-ink">
+        <p className="mt-6 rounded-lg border border-line border-l-4 border-l-accent bg-card p-4 text-ink">
           Your dominant force is{" "}
           <span className="font-semibold">{profile.dominant.name}</span> — the
           area where distortion appears most active.
@@ -132,9 +132,9 @@ export default function Home() {
                     {result.band}
                   </span>
                 </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-navy">
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-track">
                   <div
-                    className="h-full rounded-full bg-accent"
+                    className="h-full rounded-full bg-bar"
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>
@@ -159,7 +159,7 @@ export default function Home() {
     return (
       <main className="mx-auto max-w-md p-6 sm:p-8">
         <Header />
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-heading">
           Your results are ready
         </h1>
         <p className="mt-2 text-muted">
@@ -174,13 +174,13 @@ export default function Home() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-lg border border-accent bg-card px-3 py-2 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full rounded-lg border border-line bg-card px-3 py-2 text-ink placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
           />
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-lg bg-accent px-5 py-2 font-medium text-navy hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-full rounded-lg bg-accent px-5 py-2 font-medium text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
           >
             {saving ? "Saving…" : "Show my profile"}
           </button>
@@ -203,11 +203,11 @@ export default function Home() {
       <Header />
 
       <div className="rounded-xl bg-hero p-6 sm:p-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Decision distortion is amplifying every risk you&apos;re already
           managing.
         </h1>
-        <p className="mt-3 text-muted">
+        <p className="mt-3 text-white/75">
           Rate how strongly each statement describes your organization. Answer
           all 20 questions to see where noise, bias, accumulation, and incentive
           misalignment are most active — and receive a tailored report.
@@ -224,7 +224,9 @@ export default function Home() {
       >
         {FORCES.map((force) => (
           <section key={force.id}>
-            <h2 className="text-lg font-semibold text-ink">{force.name}</h2>
+            <h2 className="font-heading text-lg font-bold text-heading">
+              {force.name}
+            </h2>
             <p className="mt-1 text-sm italic text-muted">
               {force.description}
             </p>
@@ -245,8 +247,8 @@ export default function Home() {
                             key={option.value}
                             className={`cursor-pointer rounded-lg border px-2 py-2 text-center text-xs leading-tight sm:text-sm ${
                               selected
-                                ? "border-accent bg-select text-ink"
-                                : "border-line text-muted hover:border-accent"
+                                ? "border-accent bg-select font-medium text-heading"
+                                : "border-line text-ink hover:border-accent hover:text-accent"
                             }`}
                           >
                             <input
@@ -271,8 +273,8 @@ export default function Home() {
           </section>
         ))}
 
-        <div className="sticky bottom-0 border-t border-line bg-navy py-4">
-          <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-card">
+        <div className="sticky bottom-0 border-t border-line bg-page py-4">
+          <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-track">
             <div
               className="h-full rounded-full bg-accent transition-all"
               style={{
@@ -287,7 +289,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={!allAnswered}
-              className="rounded-lg bg-accent px-5 py-2 font-medium text-navy hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg bg-accent px-5 py-2 font-medium text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
             >
               See my profile
             </button>

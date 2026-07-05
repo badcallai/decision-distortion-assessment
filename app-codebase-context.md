@@ -43,8 +43,8 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 | File | What it does |
 |---|---|
 | `src/app/page.tsx` | Main assessment UI — 20 questions on one scrolling page, answered-count + progress bar, email gate, results screen, score bars, band labels |
-| `src/app/layout.tsx` | Root layout — fonts (Geist sans/mono + Playfair Display for the wordmark) |
-| `src/app/globals.css` | Tailwind import + the navy palette tokens (navy/card/hero/select/accent/ink/muted/line) |
+| `src/app/layout.tsx` | Root layout — fonts (Archivo for headings/wordmark + Roboto for body) |
+| `src/app/globals.css` | Tailwind import + the light palette tokens (page/card/line/hero/ink/heading/muted/accent/select/bar/track) |
 | `src/lib/scoring.ts` | Scoring logic — reverse-scores answers, normalizes to 0–100, assigns bands, picks the dominant force (earlier-force tie-break) |
 | `src/lib/questions.ts` | All 20 questions with force labels (N, B, A, I) and reverse-score flags |
 | `src/lib/report-email.ts` | Builds the report email — `reportEmailHtml` + `reportEmailText`. Separate module, imported by `actions.ts` |
@@ -85,14 +85,22 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 
 ## Design — Locked
 
-- **Base navy:** `#1b2f4e` throughout — no white backgrounds anywhere
-- **Cards:** `#1e3458`
-- **Hero band:** `#223662`
-- **Accent:** `#5ba3e0` (selections, borders, progress bar)
-- **Selected state:** `#1a4878` fill, `#5ba3e0` border, light text
-- **Header:** "LFB Holdings" in Playfair Display serif + "Strategic Advisory · lfbholdings.com" in small caps
+Light theme matched to lfbholdings.com (replaced the earlier all-navy dark theme on July 5, 2026).
+
+- **Fonts:** Archivo (headings + the "LFB Holdings" wordmark) + Roboto (body), both via `next/font`
+- **Page background:** `#f3f5f7` (light cool gray)
+- **Cards / inputs:** white `#ffffff`, borders `#d4dce3`
+- **Hero band:** solid navy `#1b263b` with white text (a photo is optional — drop a large image at
+  `public/hero.jpg` and wire it into the hero band later)
+- **Text:** body `#1a1a1a`, navy headings `#1b263b`, muted slate `#5b6b7f`
+- **Accent:** burnt orange `#bb6108` (buttons, progress bar, selected state), hover `#944232`
+- **Selected answer:** orange border `#bb6108` + light-orange fill `#fbeee0` + navy text
+- **Score bars:** navy `#1b263b` fill on track `#e4e8ed`; results band chips kept green/amber/red
+- **Header:** "LFB Holdings" (Archivo bold) + "Strategic Advisory · lfbholdings.com" in small caps
 - **Button labels:** Not true of us · Rarely true · Sometimes true · Often true · Consistently true
-- **Progress bar:** thin, blue fill, in the sticky bottom footer
+- **Progress bar:** thin, orange fill, in the sticky bottom footer
+- Palette lives as Tailwind tokens in `src/app/globals.css`
+  (page/card/line/hero/ink/heading/muted/accent/select/bar/track)
 
 ---
 

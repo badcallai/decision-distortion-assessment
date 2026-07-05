@@ -1,23 +1,29 @@
 @import "tailwindcss";
 
-/* The Decision Distortion palette — an all-navy theme, no white anywhere.
-   These names become Tailwind utilities: bg-navy, bg-card, border-accent, etc. */
+/* The Decision Distortion palette — a light theme matched to lfbholdings.com:
+   a light-gray canvas, white cards, one dark navy hero band, and burnt orange
+   as the single accent. These names become Tailwind utilities: bg-page,
+   bg-card, border-line, text-accent, etc. */
 @theme inline {
-  --color-navy: #1b2f4e; /* page base */
-  --color-card: #1e3458; /* cards, slightly darker than base */
-  --color-hero: #223662; /* hero band */
-  --color-select: #1a4878; /* selected answer fill */
-  --color-accent: #5ba3e0; /* blue — selections, borders, progress */
-  --color-ink: #e7eefb; /* primary text (light, not pure white) */
-  --color-muted: #93a7c9; /* muted slate-blue for descriptions */
-  --color-line: #2c4368; /* borders — a lighter navy, never white */
+  --color-page: #f3f5f7; /* page background (light cool gray) */
+  --color-card: #ffffff; /* cards and inputs */
+  --color-line: #d4dce3; /* borders */
+  --color-hero: #1b263b; /* dark hero band */
+  --color-ink: #1a1a1a; /* body text */
+  --color-heading: #1b263b; /* navy headings + wordmark */
+  --color-muted: #5b6b7f; /* muted slate for descriptions */
+  --color-accent: #bb6108; /* burnt orange — buttons, progress, selection */
+  --color-accent-hover: #944232; /* orange hover (deeper rust) */
+  --color-select: #fbeee0; /* light-orange fill for the selected answer */
+  --color-bar: #1b263b; /* navy score bars */
+  --color-track: #e4e8ed; /* bar/progress track */
 
-  --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-roboto);
+  --font-heading: var(--font-archivo);
 }
 
 body {
-  background: var(--color-navy);
+  background: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
