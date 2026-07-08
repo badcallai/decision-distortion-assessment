@@ -54,6 +54,7 @@ export default function Home() {
   const [company, setCompany] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [report, setReport] = useState<{ force: string; q: string } | null>(null);
 
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === QUESTIONS.length;
@@ -67,6 +68,7 @@ export default function Home() {
     setEmail("");
     setCompany("");
     setError("");
+    setReport(null);
     setPhase("questions");
     window.scrollTo({ top: 0 });
   }
@@ -80,6 +82,7 @@ export default function Home() {
 
     setSaving(false);
     if (result.ok) {
+      setReport(result.report ?? null);
       setPhase("results");
       window.scrollTo({ top: 0 });
     } else {
@@ -159,6 +162,30 @@ export default function Home() {
             );
           })}
         </ul>
+
+        {/* The report, rendered inline right under the profile. The route serves
+            the PDF inline by default; the browser's PDF viewer displays it here.
+            The "Download a copy" link hits the same route with ?dl=1. */}
+        {report && (
+          <div className="mt-8">
+            <h2 className="font-heading text-lg font-bold text-heading">
+              Your report
+            </h2>
+            <div className="mt-3 overflow-hidden rounded-lg border border-line">
+              <iframe
+                src={`/api/download-report?force=${report.force}&q=${report.q}`}
+                title="Your Decision Distortion report"
+                className="h-[80vh] w-full"
+              />
+            </div>
+            <a
+              href={`/api/download-report?force=${report.force}&q=${report.q}&dl=1`}
+              className="mt-3 inline-block rounded-lg border border-accent px-4 py-2 text-accent hover:bg-select"
+            >
+              Download a copy
+            </a>
+          </div>
+        )}
 
         <div className="mt-8 flex flex-wrap gap-3">
           <a

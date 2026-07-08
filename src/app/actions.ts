@@ -43,7 +43,7 @@ export async function saveLead(
   email: string,
   answers: Answers,
   companyName?: string,
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; report?: { force: Force; q: string } }> {
   const trimmedEmail = email.trim();
   if (!trimmedEmail.includes("@")) {
     return { ok: false, error: "Please enter a valid email address." };
@@ -77,12 +77,15 @@ export async function saveLead(
     };
   }
 
+  // Selection needed by both the email and the results-screen auto-download —
+  // compute once, return below, so a failed email never blocks the download.
+  const questionId = dominantQuestion(profile.dominant.force, answers);
+
   // Email the personalized report. This runs only after the lead is safely
   // stored, and everything here is wrapped so that a missing PDF or an email
   // failure is logged but never fails the user's submission — their capture has
   // already succeeded, so they should still see their profile.
   try {
-    const questionId = dominantQuestion(profile.dominant.force, answers);
     const filename = pdfFilename(profile.dominant.force, questionId);
     const pdfBuffer = readFileSync(join(process.cwd(), "pdfs", filename));
 
@@ -123,5 +126,8 @@ export async function saveLead(
     console.error("Report email failed:", err);
   }
 
-  return { ok: true };
+  return {
+    ok: true,
+    report: { force: profile.dominant.force, q: questionId.toLowerCase() },
+  };
 }
