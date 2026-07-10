@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { FORCES, QUESTIONS } from "@/lib/questions";
 import { scoreAssessment, type Answers, type Band } from "@/lib/scoring";
+import AssessmentReport from "@/components/AssessmentReport";
 import { saveLead } from "./actions";
 
 // The 1-5 frequency scale, shown as buttons under each question. Ordered low to
@@ -126,7 +127,7 @@ export default function Home() {
         </p>
 
         <p className="mt-3 text-muted">
-          Your personalized report is on its way to{" "}
+          A copy of your report is on its way to{" "}
           <span className="font-medium text-ink">{email.trim()}</span>.
         </p>
 
@@ -163,31 +164,22 @@ export default function Home() {
           })}
         </ul>
 
-        {/* The report, rendered inline right under the profile. The route serves
-            the PDF inline by default; the browser's PDF viewer displays it here.
-            The "Download a copy" link hits the same route with ?dl=1. */}
+        {/* The full report, rendered natively on the page. */}
         {report && (
-          <div className="mt-8">
-            <h2 className="font-heading text-lg font-bold text-heading">
-              Your report
-            </h2>
-            <div className="mt-3 overflow-hidden rounded-lg border border-line">
-              <iframe
-                src={`/api/download-report?force=${report.force}&q=${report.q}`}
-                title="Your Decision Distortion report"
-                className="h-[80vh] w-full"
-              />
-            </div>
-            <a
-              href={`/api/download-report?force=${report.force}&q=${report.q}&dl=1`}
-              className="mt-3 inline-block rounded-lg border border-accent px-4 py-2 text-accent hover:bg-select"
-            >
-              Download a copy
-            </a>
+          <div className="mt-10 border-t border-line pt-8">
+            <AssessmentReport force={report.force} q={report.q} />
           </div>
         )}
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-10 flex flex-wrap gap-3">
+          {report && (
+            <a
+              href={`/api/download-report?force=${report.force}&q=${report.q}&dl=1`}
+              className="rounded-lg border border-accent px-4 py-2 text-accent hover:bg-select"
+            >
+              Download as PDF
+            </a>
+          )}
           <a
             href="https://lfbholdings.com"
             className="rounded-lg bg-accent px-4 py-2 font-medium text-white hover:bg-accent-hover"
