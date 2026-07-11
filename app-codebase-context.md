@@ -31,9 +31,10 @@ report email. Production email confirmed delivering with the PDF attached and th
 - **Live URL:** `assessment.lfbholdings.com` ✓ (subdomain live via Cloudflare) — *not verifiable from the repo*
 - **Fallback URL:** `decision-distortion-assessment.vercel.app`
 - **Linked from:** `lfbholdings.com` homepage — Assessment tab added by UENI ✓ — *not verifiable from the repo*
-- **Production branch:** `claude/brave-volta-rehga0` (this is the branch Vercel deploys production
-  from — **not `main`**). A rename to `main` is desired but not yet done; it requires updating the
-  Production Branch setting in Vercel at the same time (see Branches below).
+- **Production branch:** `main` (this is the branch Vercel deploys production from). Renamed from
+  `claude/brave-volta-rehga0` on July 11, 2026; GitHub's default branch, Vercel's Production Branch
+  setting, and the local clone were all updated to match, and the chain was verified with a live
+  production deploy.
 
 ---
 
@@ -186,11 +187,12 @@ with the locked navy palette tokens.
 
 ## Branches
 
-- **Production / default:** `claude/brave-volta-rehga0` — the branch Vercel deploys from. Renaming
-  it to `main` requires (1) renaming on GitHub, (2) updating GitHub's default branch, and (3)
-  updating Vercel's Production Branch setting to match — do all three together or auto-deploys break.
-- **`feature/native-report-cta`:** merged into production (the native report + Calendly work).
-- **`feature/auto-download-report`:** superseded by the above — safe to delete.
+- **Production / default:** `main` — the branch Vercel deploys from. Renamed from
+  `claude/brave-volta-rehga0` on July 11, 2026 (GitHub default updated, Vercel Production Branch
+  setting updated, local clone re-pointed to `origin/main`, verified with a production deploy).
+- **`feature/native-report-cta`:** carried the native report + Calendly work; merged into `main`,
+  then deleted July 11, 2026.
+- **`feature/auto-download-report`:** superseded, deleted July 11, 2026.
 
 ---
 
