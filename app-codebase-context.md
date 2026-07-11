@@ -2,17 +2,25 @@
 
 This file exists so any new chat session is fully oriented on the codebase without needing to ask.
 
-> Corrected to match the repo on July 3, 2026. Where this doc and the code ever disagree,
-> the code (and `CLAUDE.md`) win — fix the doc, not your memory.
+> Regenerated July 11, 2026 after the native-report + Calendly CTA work shipped.
+> Corrected against the repo on July 3, consolidated July 10, updated July 11.
+> Where this doc and the code ever disagree, the code (and `CLAUDE.md`) win — fix the doc, not your memory.
 
 ---
 
 ## Status: SHIPPED ✓
-*Last updated: July 3, 2026*
+*Last updated: July 11, 2026*
 
-The assessment is complete, live, and working. All planned Phase 1+2 build work is done.
-The app is parked at a stable, functional state. Future work (paid tier, benchmarks, debrief
-upsell) is possible but not scheduled. Do not make changes without a clear reason.
+The assessment is complete, live, and working. All planned Phase 1+2 build work is done, including
+the scoring corrections, the band-only display, the tie nudge, the native on-screen report, and the
+Calendly call-to-action on both the results screen and the report email — all operational in
+production. The app is parked at a stable, functional state. Future work (paid tier, benchmarks,
+debrief upsell) is possible but not scheduled. Do not make changes without a clear reason.
+
+**Most recent change (July 10–11):** the per-force report now renders as native HTML on the results
+screen (replacing a silent auto-download of the PDF), and a Calendly CTA ("Book a 30-minute
+conversation" → `calendly.com/rcleander/15min`) was added to both the on-screen report and the
+report email. Production email confirmed delivering with the PDF attached and the booking block.
 
 ---
 
@@ -23,6 +31,9 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 - **Live URL:** `assessment.lfbholdings.com` ✓ (subdomain live via Cloudflare) — *not verifiable from the repo*
 - **Fallback URL:** `decision-distortion-assessment.vercel.app`
 - **Linked from:** `lfbholdings.com` homepage — Assessment tab added by UENI ✓ — *not verifiable from the repo*
+- **Production branch:** `claude/brave-volta-rehga0` (this is the branch Vercel deploys production
+  from — **not `main`**). A rename to `main` is desired but not yet done; it requires updating the
+  Production Branch setting in Vercel at the same time (see Branches below).
 
 ---
 
@@ -30,11 +41,12 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js (App Router), TypeScript |
+| Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Styling | Tailwind CSS |
 | Database | Supabase (Postgres) |
 | Hosting | Vercel |
 | Email | Resend |
+| PDF | pdf-lib (in-memory cover-page generation) |
 
 ---
 
@@ -42,14 +54,17 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 
 | File | What it does |
 |---|---|
-| `src/app/page.tsx` | Main assessment UI — 20 questions on one scrolling page, answered-count + progress bar, email gate, results screen, score bars, band labels |
-| `src/app/layout.tsx` | Root layout — fonts (Archivo for headings/wordmark + Roboto for body) |
-| `src/app/globals.css` | Tailwind import + the light palette tokens (page/card/line/hero/ink/heading/muted/accent/select/bar/track) |
+| `src/app/page.tsx` | Main assessment UI — 20 questions on one scrolling page, answered-count + progress bar, email gate, results screen, score bars, band labels. **Renders `<AssessmentReport />` natively below the bars** and a "Download as PDF" button. The old silent auto-download `useEffect` has been removed. |
+| `src/app/layout.tsx` | Root layout — fonts (Geist sans/mono + Playfair Display for the wordmark) |
+| `src/app/globals.css` | Tailwind import + the navy palette tokens (navy/card/hero/select/accent/ink/muted/line) |
 | `src/lib/scoring.ts` | Scoring logic — reverse-scores answers, normalizes to 0–100, assigns bands, picks the dominant force (earlier-force tie-break) |
 | `src/lib/questions.ts` | All 20 questions with force labels (N, B, A, I) and reverse-score flags |
-| `src/lib/report-email.ts` | Builds the report email — `reportEmailHtml` + `reportEmailText`. Separate module, imported by `actions.ts` |
-| `src/lib/cover-page.ts` | Generates a one-page transmittal cover (pdf-lib) and prepends it to the whitepaper when a company name was given |
-| `src/app/actions.ts` | Server Action `saveLead` — scores answers, saves the lead to Supabase, selects the PDF, sends the email via Resend (BCC owner) |
+| `src/lib/report-content.ts` | Report copy structured by force + question id — 4 base reports, 20 signal paragraphs, and the **CTA object (the single source of truth for the Calendly link, LFB link, and Bad Call link)**. Exports `getReport`, `normalizeForce`, `normalizeQuestion`, `FORCES`, `SIGNALS`, `CTA`. Single source for on-screen report copy. |
+| `src/components/AssessmentReport.tsx` | Native-HTML report component for the results screen. Takes `{ force, q }` straight from `saveLead` and renders masthead → force badge → opening → what it is → how it shows up → signal callout → where to start → research → what's next → CTA (including the Calendly button). Imports `CTA` from `report-content.ts`. **Lives at `src/components/` — the old repo-root copy is gone.** |
+| `src/lib/report-email.ts` | Builds the report email — `reportEmailHtml` + `reportEmailText`. Separate module, imported by `actions.ts`. **Includes the Calendly booking block in both HTML and plain-text bodies, importing `CTA` from `report-content.ts`** (so the URL lives in exactly one place across the app). |
+| `src/lib/cover-page.ts` | Builds a spare one-page transmittal cover with pdf-lib and prepends it to the selected whitepaper PDF **entirely in memory, never touching disk**. Used only when the respondent provided a company / engagement name (`prependCoverPage`). No native dependencies; runs cleanly on Vercel. |
+| `src/app/actions.ts` | Server Action `saveLead` — scores answers, saves the lead to Supabase, selects the PDF, optionally prepends the cover page, sends the email via Resend (BCC owner). Returns `report: { force, q }` |
+| `src/app/api/download-report/route.ts` | Serves the selected PDF — inline by default, `?dl=1` forces download. **Live, not dead code:** the "Download as PDF" button on the results screen depends on it (it links with `&dl=1`). Do not remove it or the `outputFileTracingIncludes` config. |
 | `src/lib/supabase.ts` | Supabase client setup (server-only, no credentials sent to browser) |
 | `supabase/schema.sql` | Database schema |
 | `supabase/policies.sql` | RLS policies (INSERT only — anon key cannot read or delete leads) |
@@ -84,28 +99,40 @@ upsell) is possible but not scheduled. Do not make changes without a clear reaso
 
 ---
 
-## Design — Locked
+## On-screen report — LIVE ✓
 
-Light theme matched to lfbholdings.com (replaced the earlier all-navy dark theme on July 5, 2026).
+The results screen renders the report **natively as HTML** via `src/components/AssessmentReport.tsx`,
+which takes `{ force, q }` straight from `saveLead`. It renders masthead → force badge → opening →
+what it is → how it shows up → signal callout → where to start → research → what's next → CTA, styled
+with the locked navy palette tokens.
 
-- **Fonts:** Archivo (headings + the "LFB Holdings" wordmark) + Roboto (body), both via `next/font`
-- **Page background:** `#f3f5f7` (light cool gray)
-- **Cards / inputs:** white `#ffffff`, borders `#d4dce3`
-- **Hero band:** solid navy `#1b263b` with white text (a photo is optional — drop a large image at
-  `public/hero.jpg` and wire it into the hero band later)
-- **Text:** body `#1a1a1a`, navy headings `#1b263b`, muted slate `#5b6b7f`
-- **Accent:** burnt orange `#bb6108` (buttons, progress bar, selected state), hover `#944232`
-- **Selected answer:** orange border `#bb6108` + light-orange fill `#fbeee0` + navy text
-- **Score bars:** navy `#1b263b` fill on track `#e4e8ed`; results band chips kept green/amber/red
-- **Header:** "LFB Holdings" (Archivo bold) + "Strategic Advisory · lfbholdings.com" in small caps
-- **Button labels:** Not true of us · Rarely true · Sometimes true · Often true · Consistently true
-- **Progress bar:** thin, orange fill, in the sticky bottom footer
-- Palette lives as Tailwind tokens in `src/app/globals.css`
-  (page/card/line/hero/ink/heading/muted/accent/select/bar/track)
+- The old PDF `<iframe>` and the silent auto-download-on-mount are **both gone.**
+- A "Download as PDF" button remains below the report for anyone who wants the file; it links to
+  `/api/download-report?...&dl=1` (a deliberate click, so it forces the download).
+- The **signal callout** uses `bg-card` (not `bg-hero`) — an earlier dark-on-dark readability bug
+  was fixed here.
+- The Calendly CTA button lives inside this component and reads `CTA.calendly` from
+  `report-content.ts`.
 
 ---
 
-## PDF Selection
+## CTA / Calendly — single source of truth
+
+- The Calendly link, LFB link, and Bad Call link all live in the **`CTA` object in
+  `report-content.ts`**. The on-screen report and the email both import `CTA` — change the URL or
+  label in one place and both surfaces update.
+- **Calendly URL:** `calendly.com/rcleander/15min` · **Button label:** "Book a 30-minute conversation"
+- **Known cosmetic mismatch:** the URL slug says `15min` but the actual Calendly event is 30 minutes.
+  The slug is just the event-type name Calendly assigned at creation; it does not govern duration.
+  Leave it unless you rename the event in Calendly (which would change the link and break any already
+  sent).
+- **Calendly delivery note:** the event type must be set to **"Email confirmation"** (not "Calendar
+  invitation"). When it was set to Calendar invitation, invitees never received a Calendly email.
+  This is now set correctly.
+
+---
+
+## PDF Selection (email attachments)
 
 - 20 pre-built PDFs stored in **`pdfs/`** at the repo root (read at runtime with `readFileSync`)
 - Within the dominant force, the **worst-scored question** (lowest 1–5 answer = most distortion)
@@ -114,11 +141,9 @@ Light theme matched to lfbholdings.com (replaced the earlier all-navy dark theme
   e.g. `noise - n3.pdf`, `bias - b2.pdf`, `accumulation - a5.pdf`
 - Client-facing attachment name is clean and per-force: `Noise.pdf`, `Bias.pdf`,
   `Accumulation.pdf`, `Incentives.pdf`
-- If a company/engagement name was provided, a one-page cover ("LFB Holdings" /
-  "Decision Distortion Assessment" / "Prepared for {name}" / date) is generated at
-  runtime with **pdf-lib** and prepended as page 1 — in memory, disk PDFs untouched.
-  Blank name → whitepaper attached unchanged. A cover failure falls back to the plain
-  PDF and never blocks the email. Logic in `src/lib/cover-page.ts`, called from `actions.ts`.
+- **The static PDFs deliberately do NOT carry the Calendly link** (decision, July 11, 2026). The CTA
+  lives on the results screen and in the email body only. An `appendCtaPage` (pdf-lib, alongside
+  `prependCoverPage`) was considered and explicitly declined — do not build it without a new decision.
 
 ---
 
@@ -128,13 +153,44 @@ Light theme matched to lfbholdings.com (replaced the earlier all-navy dark theme
 - HTML + plain-text templates live in **`src/lib/report-email.ts`** (a separate module),
   imported by `actions.ts` — not inlined
 - Includes: full score profile (band labels + bars, no numeric scores), dominant force callout,
-  PDF attached
-- If the respondent filled the optional company/engagement name, it's stored in
-  `leads.company_name` and echoed as "Prepared for {name}" on the results screen and in the email
+  **the Calendly booking block** (from the `CTA` object), and the PDF attached
 - BCC copy goes to the owner (`rleander@lfbholdings.com`) on every report
 - Sending address: `results@lfbholdings.com` (domain verified in Resend)
 - Email delivery is wrapped in try/catch: a missing PDF or Resend failure is logged but never
   fails the submission — the lead is already saved and the user still sees their profile
+- **Production email confirmed** delivering with the PDF attached and the booking block (July 11).
+
+---
+
+## Design — Locked
+
+- **Base navy:** `#1b2f4e` throughout — no white backgrounds anywhere
+- **Cards:** `#1e3458`
+- **Hero band:** `#223662`
+- **Accent:** `#5ba3e0` (selections, borders, progress bar)
+- **Selected state:** `#1a4878` fill, `#5ba3e0` border, light text
+- **Header:** "LFB Holdings" in Playfair Display serif + "Strategic Advisory · lfbholdings.com" in small caps
+- **Button labels:** Not true of us · Rarely true · Sometimes true · Often true · Consistently true
+- **Progress bar:** thin, blue fill, in the sticky bottom footer
+- **Signal callout:** `bg-card` (readable), accent left border
+
+---
+
+## Report Copy — Source of Truth
+
+- Original manuscript: `DD_Assessment_Reports_Draft2.docx` (4 base reports + 20 signal paragraphs)
+- **Edit copy in `src/lib/report-content.ts`**, not the docx — that module is what the UI reads
+- Email copy lives separately in `src/lib/report-email.ts`; the 20 PDFs are pre-built and static
+
+---
+
+## Branches
+
+- **Production / default:** `claude/brave-volta-rehga0` — the branch Vercel deploys from. Renaming
+  it to `main` requires (1) renaming on GitHub, (2) updating GitHub's default branch, and (3)
+  updating Vercel's Production Branch setting to match — do all three together or auto-deploys break.
+- **`feature/native-report-cta`:** merged into production (the native report + Calendly work).
+- **`feature/auto-download-report`:** superseded by the above — safe to delete.
 
 ---
 
