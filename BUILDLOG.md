@@ -200,3 +200,5 @@ A running record of what was decided and built, newest at the bottom.
 - Verified: `npm run build` clean; cover smoke test (2-page whitepaper → 3 pages) with
   the embedded image carrying its alpha (SMask) and the text lines intact; header
   eyeballed on the dev server. Scoring, routing, capture, and email content untouched.
+
+- 2026-07-11: Renamed production branch to main (was claude/brave-volta-rehga0).
