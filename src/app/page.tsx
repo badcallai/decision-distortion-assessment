@@ -210,6 +210,10 @@ export default function Home() {
           Enter your email to see which of the four Decision Distortion forces
           are most active in your organization.
         </p>
+        <p className="mt-3 text-sm text-muted">
+          A complete copy of your findings and full report will be sent to this
+          email address.
+        </p>
 
         <form onSubmit={submitEmail} className="mt-6 space-y-3">
           <input
